@@ -6,6 +6,7 @@
 
 //Declared constants
 var constants = {
+	editBtn: "edit-button",
 	todoTask: "todo-task",
 	todoHeader: "task-header",
 	todoDate: "task-date",
@@ -20,6 +21,7 @@ var constants = {
 		"2": "#inProgress",
 		"3": "#completed"
 	},
+	
 	//If todoData exists in local storage, store it in 'data'.
 	data = JSON.parse(localStorage.getItem("todoData")) || {};
 
@@ -38,6 +40,12 @@ var GenerateTask = function(params){
 	$("<div />", {
 	    "class" : constants.todoHeader,
 	    "text": params.title
+	}).appendTo(wrapper);
+
+	$("<button />", {
+	    "id" : constants.editBtn + params.id,
+	    "class" : constants.editBtn,
+	    "onclick" : "editTask(this.id)"
 	}).appendTo(wrapper);
 	 
 	$("<div />", {
@@ -75,10 +83,10 @@ var RemoveTask = function(params){
 var AddDeleteTaskFunctionality = function(){
 	$("#" + constants.deleteDiv).droppable({
 		drop: function(event, ui){
-			var element = ui.draggable,
-				styleId = element.attr("id"),
-				taskId = styleId.slice(5),
-				task = data[taskId];
+			var element = ui.draggable;
+			var	styleId = element.attr("id");
+			var	taskId = styleId.slice(5);
+			var	task = data[taskId];
 			//Remove task from the DOM	
 			RemoveTask(task);
 			//Delete the task object and update local storage
@@ -92,7 +100,7 @@ var AddDeleteTaskFunctionality = function(){
 var ClearForm = function(){
 	$("#title").val("");
 	$("#desc").val("");
-	$("#date").val("");
+	$("#todo-form .datepicker").val("");
 };
 
 //Clear all tasks
@@ -109,15 +117,58 @@ var DisplayStoredTasks = function(){
     });
 };
 
+var editTask = function(buttonID){
+	var	taskID = buttonID.slice(11);
+	var	task = data[taskID];
+	var editTitle = $("#edit-title");
+	var editDate = $("#edit-date");
+	var editDesc = $("#edit-desc");
+
+	$("#dialog-box").dialog({
+		modal: true,
+		title: "Edit Task",
+        height: 380,
+        width: 400,
+
+        open: function(){
+	        editTitle.val(task.title);
+			editDate.val(task.date);
+			editDesc.val(task.description);
+		},
+
+		buttons: [{
+			text: "Submit",
+			click: function(){
+				if (editTitle.val() == "" || editDate.val() == "" || editDesc.val() == "") {
+					alert("Please fill out all fields");
+				}
+				else{
+
+					task.title = editTitle.val();
+					task.date = editDate.val();
+					task.description = editDesc.val();
+
+					//Store the updated task in local storage
+					data[taskID] = task;
+					localStorage.setItem("todoData", JSON.stringify(data));
+
+					$(this).dialog("close");
+					location.reload();
+				}	
+			}
+		}]
+	});
+};	
+
 //Adds Droppable functionality to each column
 var AddColumnDropFunctionality = function(){
 	$.each(columns, function (colNum, col){
 		$(col).droppable({
 			drop: function(event, ui){
-				var element = ui.draggable,
-					styleId = element.attr("id"),
-					taskId = styleId.slice(5),
-					task = data[taskId];
+				var element = ui.draggable;
+				var	styleId = element.attr("id");
+				var	taskId = styleId.slice(5);
+				var	task = data[taskId];
 
 				//Remove the task	
 				RemoveTask(task);
@@ -144,12 +195,12 @@ $(document).ready(function(){
 		//Stops the page from reloading
 		e.preventDefault();
 
-		var title = $('#title').val(),
-			desc = $('#desc').val(),
-			date = $('#date').val(),
-			id = new Date().getTime(),
+		var title = $('#title').val();
+		var	desc = $('#desc').val();
+		var	date = $('#todo-form .datepicker').val();
+		var	id = new Date().getTime();
 
-			taskData = {
+		var	taskData = {
 				id : id,
 			    column: "1",
 			    title: title,
@@ -157,14 +208,19 @@ $(document).ready(function(){
 			    description: desc
 			};
 
-		//Store taskData object in 'data' with the id as its key	
-		data[id] = taskData;
+        if (!title.length || !desc.length || !date.length) {
+        	alert("Please fill out all fields");
+        }
+        else {
+        	
+			//Store taskData object in 'data' with the id as its key	
+			data[id] = taskData;
 
-		//Update local storage
-        localStorage.setItem("todoData", JSON.stringify(data));
-
-        //Call the generateTask function and pass it the taskData object
-  		GenerateTask(taskData);
-  		ClearForm();
+			//Update local storage
+	        localStorage.setItem("todoData", JSON.stringify(data));
+        	//Call the generateTask function and pass it the taskData object
+  			GenerateTask(taskData);
+  			ClearForm();
+        }
 	});
 });

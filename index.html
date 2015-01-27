@@ -1,0 +1,74 @@
+<html>
+
+<head>
+	<title>To Do List</title>
+	<link rel="stylesheet" type="text/css" href="css/toDoList.css">
+	<link rel="stylesheet" type="text/css" href="css/animate.css">
+	<link rel="stylesheet" type="text/css" href="css/pikaday.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+</head>
+
+<body>
+	<div id="header">
+		<img src="images/todo-logo.png">
+	</div>
+
+	<div id="dialog-box">
+		<form id="edit-form">
+			<input type="text" id="edit-title" placeholder="Title">
+			<input type="text" id="edit-date" class="datepicker" placeholder="Date">
+			<textarea id="edit-desc" placeholder="Description"></textarea>
+		</form>
+	</div>
+
+	<div id ="container">
+
+		<div id ="pending" class="task-area">
+			<h3>Pending Task</h3>
+		</div>
+
+		<div id ="inProgress" class="task-area">
+			<h3>In Progress</h3>
+		</div>
+
+		<div id ="completed" class="task-area">
+			<h3>Completed</h3>
+		</div>
+
+		<div id="add-new-task" class="task-area">
+
+			<h3>Add New Task</h3>
+
+			<form id="todo-form">
+				<input type="text" id="title" placeholder="Title" />
+			    <textarea id="desc" placeholder="Description"></textarea>
+			    <input type="text" class="datepicker" placeholder="Due Date (dd/mm/yyyy)" /><br><br>
+			    <input type="submit" class="btn btn-primary" value="Add Task" />
+			    <input type="button" class="btn btn-primary" value="Clear Data" onclick="ClearData()" />
+			</form>
+	 		
+	 		<br><br>
+	  		<div id="delete-area" class="animated invisible"></div>
+		</div>
+
+	</div>
+	<script type="text/javascript" src="scripts/jquery-2.1.1.js"></script>
+	<script type="text/javascript" src="scripts/jquery-ui.js"></script>
+	<script type="text/javascript" src="scripts/todo.js"></script>
+	<script type="text/javascript" src="scripts/moment.js"></script>
+	<script type="text/javascript" src="scripts/effects.js"></script>
+	<script type="text/javascript" src="scripts/pikaday.js"></script>
+	<script>
+		$(".datepicker").each(function(){
+			var	picker = new Pikaday({ 
+				field: $(this)[0],
+		    	format: 'DD/MM/YYYY',
+	        	onSelect: function() {
+	            	console.log(this.getMoment().format('Do MMMM YYYY'));
+	        	} 
+	    	});
+		});
+    </script>
+</body>
+
+</html>
