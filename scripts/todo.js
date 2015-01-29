@@ -119,6 +119,7 @@ var DisplayStoredTasks = function(){
 
 var editTask = function(buttonID){
 	var	taskID = buttonID.slice(11);
+	var taskElementID = "#task-" + taskID;
 	var	task = data[taskID];
 	var editTitle = $("#edit-title");
 	var editDate = $("#edit-date");
@@ -143,17 +144,22 @@ var editTask = function(buttonID){
 					alert("Please fill out all fields");
 				}
 				else{
-
+					//Update the object fields
 					task.title = editTitle.val();
 					task.date = editDate.val();
 					task.description = editDesc.val();
+
+					//Update the HTML elements
+					$(taskElementID).find(".task-header").text(task.title);
+					$(taskElementID).find(".task-date").text(task.date);
+					$(taskElementID).find(".task-description").text(task.description);
 
 					//Store the updated task in local storage
 					data[taskID] = task;
 					localStorage.setItem("todoData", JSON.stringify(data));
 
+					//Close dialog box
 					$(this).dialog("close");
-					location.reload();
 				}	
 			}
 		}]
